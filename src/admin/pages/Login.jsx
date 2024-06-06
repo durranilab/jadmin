@@ -16,7 +16,7 @@ const Login = () => {
     return (
         <div className={'contain-layout h-screen '}>
             <div className={'flex flex-col bg-gray-100 rounded-2xl m-8 p-6 py-24 my-24'}>
-                <h1 className={'text-3xl mx-auto'}>Login</h1>
+                <h1 className={'text-3xl mx-auto'}>Login Hi</h1>
 
                 <div className={'mx-auto py-12'}>
 
