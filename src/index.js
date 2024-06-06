@@ -10,6 +10,7 @@ import {
 import CheckLogin from "./admin/pages/CheckLogin";
 import Dashboard from "./admin/pages/Dashboard";
 import Navigation from "./admin/pages/Navigation";
+import Customers from "./admin/pages/Customers";
 
 
 const router = createBrowserRouter([
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
             {
                 path: "/admin/dashboard",
                 element: <Dashboard/>,
+            },
+            {
+                path: "/admin/customers",
+                element: <Customers/>,
             },
         ]
     }

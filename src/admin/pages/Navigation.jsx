@@ -3,12 +3,13 @@ import {Outlet} from "react-router-dom";
 import {
     ArrowLeft,
     ArrowRight,
-    Briefcase, Cog, Logout,
+    Briefcase, ChartSquareBar, Cog, Logout,
     ShoppingCart,
     UserGroup
 } from "heroicons-react";
 import MenuItems from "../comps/MenuItems";
 import TextInput from "../comps/TextInput";
+import Dashboard from "./Dashboard";
 
 const Navigation = () => {
 
@@ -19,10 +20,19 @@ const Navigation = () => {
 
     const menuItems = [
         {
+            title: 'Dashboard',
+            icon: <ChartSquareBar/>,
+            onClick: () => {
+            },
+            link: "/admin",
+            isActive: true
+        },
+        {
             title: 'Customers',
             icon: <UserGroup/>,
             onClick: () => {
             },
+            link: "/admin/customers",
             isActive: true
         },
         {
@@ -30,6 +40,7 @@ const Navigation = () => {
             icon: <ShoppingCart/>,
             onClick: () => {
             },
+            link: "/admin/orders",
             isActive: false
         },
         {
@@ -37,6 +48,7 @@ const Navigation = () => {
             icon: <Briefcase/>,
             onClick: () => {
             },
+            link: "/admin/products",
             isActive: false
         },
         {
@@ -44,6 +56,7 @@ const Navigation = () => {
             icon: <Cog/>,
             onClick: () => {
             },
+            link: "/admin/settings",
             isActive: false
         },
 
@@ -66,6 +79,7 @@ const Navigation = () => {
                         icon={item.icon}
                         onClick={item.onClick()}
                         title={item.title}
+                        link={item.link}
                         isActive={item.isActive}
                     />
                 )}
