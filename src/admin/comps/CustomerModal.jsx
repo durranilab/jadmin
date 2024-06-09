@@ -1,28 +1,50 @@
-import React, {Fragment, useContext, useEffect} from 'react';
+import React, {Fragment, useContext, useEffect, useState} from 'react';
 import {Dialog, Transition} from "@headlessui/react";
 import PrimaryButton from "./PrimaryButton";
 import SecondaryButton from "./SecondaryButton";
 import TextInput from "./TextInput";
+import axios from "axios";
 
 
 const CustomerModal = ({isOpen = false, closeModal, customer = {}, onSuccess}) => {
 
+    const [currentCustomer, setCurrentCustomer] = useState(customer)
+    const [errors, setErrors] = useState({})
+
+
     useEffect(() => {
-        if (isOpen) {
-            customer.name = ''
-            customer.phone = ''
-            customer.email = ''
-            customer.address = ''
-            customer.pinCode = ''
-            customer.city = ''
-            customer.state = ''
-        }
-    }, [isOpen])
+        setCurrentCustomer(customer)
+    }, [customer])
 
     const saveCustomer = () => {
-        console.log(customer)
-        onSuccess(customer)
+        axios.post('http://127.0.0.1:8000/api/addcustomer', currentCustomer).then((res) => {
+            onSuccess(customer)
+        }).catch((err) => {
+            setErrors(err.response.data)
+            console.log(err.response.data)
+        })
     }
+
+    const updateCustomer = (customer) => {
+        axios.post('http://127.0.0.1:8000/api/updatecustomer', {
+            name: customer.name,
+            phone: customer.phone,
+            email: customer.email,
+            address: customer.address,
+            pinCode: customer.pinCode,
+            city: customer.city,
+            state: customer.state,
+            id: customer.id
+        }).then((res) => {
+            onSuccess(customer)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    useEffect(() => {
+        console.log(currentCustomer)
+    }, [currentCustomer])
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -59,6 +81,11 @@ const CustomerModal = ({isOpen = false, closeModal, customer = {}, onSuccess}) =
                                 >
                                     Add Customer
 
+                                    <div className={'bg-red-300'}>
+                                        {errors.email && <p>{errors.email[0]}</p>}
+                                        {errors.name && <p>{errors.name[0]}</p>}
+                                    </div>
+
                                 </Dialog.Title>
                                 <div className="mt-2">
 
@@ -68,60 +95,66 @@ const CustomerModal = ({isOpen = false, closeModal, customer = {}, onSuccess}) =
 
                                         <TextInput name={'name'}
                                                    label={'Name'}
-                                                   value={customer.name}
+                                                   value={currentCustomer.name}
                                                    placeholder={'Name'}
                                                    onChange={(e) => {
-                                                       customer.name = e.target.value
+                                                       setCurrentCustomer({...currentCustomer, 'name': e.target.value})
                                                    }}/>
 
                                         <TextInput name={'phone'}
                                                    label={'Phone'}
-                                                   value={customer.phone}
+                                                   value={currentCustomer.phone}
                                                    placeholder={'Phone'}
                                                    onChange={(e) => {
-                                                       customer.phone = e.target.value
+                                                       setCurrentCustomer({...currentCustomer, 'phone': e.target.value})
                                                    }}/>
 
                                         <TextInput name={'email'}
                                                    label={'Email'}
-                                                   value={customer.email}
+                                                   value={currentCustomer.email}
+                                                   type={'email'}
                                                    placeholder={'Email'}
                                                    onChange={(e) => {
-                                                       customer.email = e.target.value
+                                                       setCurrentCustomer({...currentCustomer, 'email': e.target.value})
                                                    }}/>
 
                                         <TextInput name={'address'}
                                                    label={'Address'}
-                                                   value={customer.address}
+                                                   value={currentCustomer.address}
                                                    placeholder={'Address'}
                                                    onChange={(e) => {
-                                                       customer.address = e.target.value
+                                                       setCurrentCustomer({
+                                                           ...currentCustomer,
+                                                           'address': e.target.value
+                                                       })
                                                    }}/>
 
                                         <TextInput name={'pinCode'}
                                                    label={'Pin Code'}
-                                                   value={customer.pinCode}
+                                                   value={currentCustomer.pinCode}
                                                    placeholder={'Pin Code'}
                                                    onChange={(e) => {
-                                                       customer.pinCode = e.target.value
+                                                       setCurrentCustomer({
+                                                           ...currentCustomer,
+                                                           'pinCode': e.target.value
+                                                       })
                                                    }}/>
 
                                         <TextInput name={'city'}
                                                    label={'City'}
-                                                   value={customer.city}
+                                                   value={currentCustomer.city}
                                                    placeholder={'City'}
                                                    onChange={(e) => {
-                                                       customer.city = e.target.value
+                                                       setCurrentCustomer({...currentCustomer, 'city': e.target.value})
                                                    }}/>
 
                                         <TextInput name={'state'}
                                                    label={'State'}
-                                                   value={customer.state}
+                                                   value={currentCustomer.state}
                                                    placeholder={'State'}
                                                    onChange={(e) => {
-                                                       customer.state = e.target.value
+                                                       setCurrentCustomer({...currentCustomer, 'state': e.target.value})
                                                    }}/>
-
 
                                     </div>
 
@@ -129,9 +162,12 @@ const CustomerModal = ({isOpen = false, closeModal, customer = {}, onSuccess}) =
                                 </div>
 
                                 <div className="border-t py-4 flex gap-2 justify-between mt-4">
-                                    <PrimaryButton text={'Save'} onClick={() => {
+
+                                    {customer.name === '' ? <PrimaryButton text={'Save'} onClick={() => {
                                         saveCustomer()
-                                    }}/>
+                                    }}/> : <PrimaryButton text={'Update'} onClick={() => {
+                                        updateCustomer(currentCustomer)
+                                    }}/>}
                                     <SecondaryButton text={'Cancel'} onClick={closeModal}/>
                                 </div>
                             </Dialog.Panel>

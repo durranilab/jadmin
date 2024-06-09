@@ -1,43 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import PrimaryButton from "../comps/PrimaryButton";
 import {Pencil, Trash} from "heroicons-react";
 import CustomerModal from "../comps/CustomerModal";
 import AlertModal from "../comps/AlertModal";
+import axios from "axios";
 
 const Customers = () => {
 
-    const [customerData, setCustomerData] = useState([
-        {
-            id: 1,
-            name: 'Name',
-            phone: 'Phone',
-            email: 'Email',
-            address: 'Address',
-            pinCode: 'Pin Code',
-            city: 'City',
-            state: 'State',
-        },
-        {
-            id: 2,
-            name: 'Name',
-            phone: 'Phone',
-            email: 'Email',
-            address: 'Address',
-            pinCode: 'Pin Code',
-            city: 'City',
-            state: 'State',
-        },
-        {
-            id: 3,
-            name: 'Name',
-            phone: 'Phone',
-            email: 'Email',
-            address: 'Address',
-            pinCode: 'Pin Code',
-            city: 'City',
-            state: 'State',
-        }
-    ])
+    const [customerData, setCustomerData] = useState([])
     const [openModal, setModal] = useState(false);
     const [currentCustomer, setCurrentCustomer] = useState({
         name: '',
@@ -51,20 +21,42 @@ const Customers = () => {
 
     const [openAlert, setAlert] = useState(false);
 
+
+
     const startDelete = (customer) => {
         setAlert(true)
+        setCurrentCustomer(customer)
     }
 
-
     const onSuccess = (customer) => {
-        setCustomerData([...customerData, customer])
         setModal(false)
+        getCustomers()
     }
 
     const startEdit = (customer) => {
         setCurrentCustomer(customer)
         setModal(true)
     }
+
+    const confirmDelete = () => {
+        axios.post('http://127.0.0.1:8000/api/deletecustomer', currentCustomer).then((res) => {
+            setAlert(false)
+            getCustomers()
+        })
+    }
+
+    const getCustomers = () => {
+        axios.post('http://127.0.0.1:8000/api/getcustomers').then((res) => {
+            setCustomerData(res.data)
+            console.log(res.data)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    useEffect(() => {
+        getCustomers()
+    }, [])
 
     return (
         <div className={'flex flex-col'}>
@@ -79,16 +71,24 @@ const Customers = () => {
             <AlertModal closeModal={() => {
                 setAlert(false)
             }}
-                        isOpen={() => {
-                            setAlert(true)
-                        }}
+                        isOpen={openAlert}
                         title={"Confirm Delete"}
                         message={"Are you sure you want to delete this customer"}
                         onConfirm={() => {
+                            confirmDelete()
                         }}/>
 
             <div className={'ml-auto m-2'}>
                 <PrimaryButton text={'Add Customer'} onClick={() => {
+                    setCurrentCustomer({
+                        name: '',
+                        phone: '',
+                        email: '',
+                        address: '',
+                        pinCode: '',
+                        city: '',
+                        state: '',
+                    })
                     setModal(true)
                 }}/>
             </div>
@@ -121,7 +121,9 @@ const Customers = () => {
                                 <Pencil className={'text-blue-500 cursor-pointer'} onClick={() => {
                                     startEdit(item)
                                 }}/>
-                                <Trash className={'text-red-500 cursor-pointer'}/>
+                                <Trash className={'text-red-500 cursor-pointer'} onClick={() => {
+                                    startDelete(item)
+                                }}/>
                             </td>
                         </tr>
                     )}
