@@ -9,8 +9,8 @@ import {
 } from "react-router-dom";
 import CheckLogin from "./admin/pages/CheckLogin";
 import Dashboard from "./admin/pages/Dashboard";
-import Navigation from "./admin/pages/Navigation";
 import Customers from "./admin/pages/Customers";
+import Products from "./admin/pages/Products";
 
 
 const router = createBrowserRouter([
@@ -30,6 +30,10 @@ const router = createBrowserRouter([
                 path: "/admin/customers",
                 element: <Customers/>,
             },
+            {
+                path: "/admin/products",
+                element: <Products/>,
+            }
         ]
     }
 ]);
